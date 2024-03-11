@@ -13,7 +13,6 @@ app.secret_key = 'helooree120238#1!'
 
 TOKEN_INFO = 'token_info'
 
-
 @app.route('/')
 def login(): 
     auth_url = create_spotify_oauth().get_authorize_url()
