@@ -37,7 +37,37 @@ def save_discover_weekly():
         print("user not logged in")
         return redirect('/')
 
-    return("OAUTH SUCCESSFUL")
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    user_id = sp.current_user()['id']
+
+    current_playlists = sp.current_user_playlists()['items']
+    saved_weekly_playlist_id = None
+    discover_weekly_playlist_id = None
+
+
+    for playlist in current_playlists: 
+        if playlist['name'] == 'Discover Weekly':
+            discover_weekly_playlist_id = playlist['id']
+        if playlist['name'] == 'Saved Discover Weekly':
+            saved_weekly_playlist_id = playlist['id']
+    
+    if not discover_weekly_playlist_id:
+        return "Discover Weekly not found"
+
+    if not saved_weekly_playlist_id:
+        new_playlist = sp.user_playlist_create(user_id, "Saved Weekly", True)
+        saved_weekly_playlist_id = new_playlist['id']
+    
+    discover_weekly_playlist = sp.playlist_items(discover_weekly_playlist_id)
+    song_uris = []
+
+    for song in discover_weekly_playlist['items']:
+        song_uri = song['track']['uri']
+        song_uris.append(song_uri)
+
+    sp.user_playlist_add_tracks(user_id, saved_weekly_playlist_id, song_uris, None)
+
+    return("SUCCESS")
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
@@ -46,7 +76,7 @@ def get_token():
     
     now = int(time.time())
 
-    is_expired = token_info[expires_at] - now < 60 
+    is_expired = token_info['expires_at'] - now < 60 
 
     if(is_expired): 
         spotify_oauth = create_spotify_oauth()
