@@ -1,1 +1,1 @@
-web: gunicorn spotify-discover-weekly-update:app
+web: gunicorn spotifyWeekly:app
