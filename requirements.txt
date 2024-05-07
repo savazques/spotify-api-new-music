@@ -20,5 +20,4 @@ soupsieve==2.5
 spotipy==2.23.0
 urllib3==2.1.0
 webencodings==0.5.1
-Werkzeug==3.0.1
 zipp==3.17.0
